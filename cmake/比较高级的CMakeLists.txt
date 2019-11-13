@@ -1,0 +1,40 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(app)
+
+find_package(OpenCV REQUIRED)
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(.)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+#TEST_ON_VIDEO这个宏的指定需要在cmake命令行上指定：cmake -DTEST_ON_VIDEO=OFF .. && make && ./app
+option(TEST_ON_VIDEO "在视频上面测试，不在单张图片上测试." ON)
+if (${TEST_ON_VIDEO} STREQUAL "ON")
+    add_definitions(-DON_VIDEO)
+    message("将测试视频..")
+else()
+    message("将测试图片..")
+endif()
+
+add_executable(app main.cpp func.cpp)
+
+target_link_libraries(app ${OpenCV_LIBS})
+
+include(CTest)
+if (TEST_ON_VIDEO STREQUAL "ON")
+    add_test (test_mp4_0 app /tmp/mp4/789.mp4)
+    add_test (test_mp4_1 app /tmp/mp4/456.mp4)
+else()
+    add_test (debug02 app ../debug02.jpg)
+    add_test (debug01 app ../debug01.jpg)
+    add_test (NormalPicture0 app ../../1917.jpg)
+    add_test (NormalPicture1 app ../../2608.jpg)
+    add_test (NormalPicture2 app ../../2612.jpg)
+    add_test (NormalPicture3 app ../../2728.jpg)
+endif ()
+
+
+
+
+
